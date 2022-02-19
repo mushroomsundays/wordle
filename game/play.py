@@ -7,10 +7,11 @@ from random import sample
 
 WORD_LIST_FILEPATH = 'word_lists/wordle-answers-alphabetical.txt'
 GUESS_LIST_FILEPATH = 'word_lists/wordle-allowed-guesses.txt' # doesn't include words from WORD_LIST_FILEPATH
+LETTERS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
 
 class Wordle:    
     def __init__(self):
-        self.game_state = { letter: '_' for letter in letters }
+        self.game_state = { letter: '_' for letter in LETTERS }
         self.guessed_letters = set()
         self.guessed_words = []
         self.results = []
@@ -119,11 +120,15 @@ class Wordle:
         """
         pass
 
+    def reset_game_state(self):
+        self.game_state = { letter: '_' for letter in LETTERS }
+        self.guessed_letters = set()
+        self.guessed_words = []
+        self.results = []
+
 if __name__ == "__main__":
     num_won = 0
     again = 'y'
-    letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
-    #initial_game_state = { letter: '_' for letter in letters }
 
     w = Wordle()
 
@@ -131,5 +136,6 @@ if __name__ == "__main__":
         w.play()
         num_won += 1
         again = input("Play again? (y/n) ").lower()
+        w.reset_game_state()
     
     print(f"Game over. You won {num_won} games!")
