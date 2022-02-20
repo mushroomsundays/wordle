@@ -5,6 +5,24 @@ WORD_LIST_FILEPATH = 'word_lists/wordle-answers-alphabetical.txt'
 GUESS_LIST_FILEPATH = 'word_lists/wordle-allowed-guesses.txt' # doesn't include words from WORD_LIST_FILEPATH
 USED_WORDS_FILEPATH = 'word_lists/used.txt'
 
+class Users: 
+    def __init__(self):
+        self.username = ""
+        self.password = ""
+
+    def login():
+        """
+        Log the user in. User accounts are stored in userx.json
+        """
+        pass 
+
+    def create_account():
+        """
+        Let the user enter their username and password. 
+        Store credentials in users.json
+        """
+        pass
+
 def get_secret_word(word_list_filepath, used_words_filepath):
     with open(word_list_filepath) as f1, open(used_words_filepath, 'a') as f2:
         wordle_words = set(f1.read().split())
@@ -30,6 +48,7 @@ class Wordle:
         self.guessed_words = []
         self.guess_count = 0
         self.results = []
+        self.num_won = 0
     
     def play(self):
         """
@@ -43,9 +62,16 @@ class Wordle:
         while not is_correct:
             # end game if player fails on 6th guess
             if self.guess_count > 5:
-                print("Game over. The secret word was {secret_word}")
+                print(f"Game over. The secret word was {secret_word}")
                 return
-            guess = self.ask_player_for_guess(GUESS_LIST_FILEPATH, WORD_LIST_FILEPATH, secret_word)
+
+            guess = self.ask_player_for_guess(GUESS_LIST_FILEPATH, WORD_LIST_FILEPATH)
+
+            # end game if player entered 'q' or 'quit'
+            if guess in ['Q', 'QUIT']:
+                print(f"Game over. The secret word was {secret_word}")
+                return
+
             self.guess_count += 1
             is_correct = self.evaluate_guess(secret_word, guess)
             self.display_letter_list()
@@ -55,7 +81,7 @@ class Wordle:
         
         print(f"Congratulations! You guessed the secret word {secret_word}!")
 
-    def ask_player_for_guess(self, guess_list_filepath, word_list_filepath, secret_word):
+    def ask_player_for_guess(self, guess_list_filepath, word_list_filepath):
         """
         Ask the player for a five letter word. If the word is not valid,
         prompt the player for a new word until they enter a valid one.
@@ -63,11 +89,7 @@ class Wordle:
         is_valid = False 
         while not is_valid:
             x = input("Enter a five letter word: ")
-
-            # end game and reveal word if user enters 'q' or 'quit'
-            if x.lower() in ['q', 'quit']:
-                print(f"Game over. The secret word was {secret_word}")
-
+                
             with open(guess_list_filepath) as f1, open(word_list_filepath) as f2:
                 valid_guesses = set(f1.read().split()).union(set(f2.read().split()))
                 if x.lower() in valid_guesses:
@@ -85,6 +107,7 @@ class Wordle:
         Returns True if guess = secret_word else False
         """
         if guess == secret_word:
+            self.num_won += 1
             return True 
 
         result = ""
@@ -114,10 +137,8 @@ class Wordle:
 
             self.guessed_letters.add(guessed_letter)
 
-            self.verify_game_status(secret_word)
+            self.verify_game_state(secret_word)
         
-        print(result)
-
         self.guessed_words.append(guess)
         self.results.append(result)
 
@@ -131,7 +152,7 @@ class Wordle:
         for k,v in self.game_state.items():
             print(f'{k}: {v}')
 
-    def verify_game_status(self, secret_word):
+    def verify_game_state(self, secret_word):
         """
         Makes sure game state is correct after being updated
         """
@@ -145,15 +166,21 @@ class Wordle:
         self.results = []
 
 if __name__ == "__main__":
-    num_won = 0
-    again = 'y'
+    """
+    # prompt user to log in or create account
+    print("Menu")
+    print("(1) Log in")
+    print("(2) Create account")
+    a = input()
+    """
 
+    # play Wordle
+    again = 'y'
     w = Wordle()
 
     while again == 'y':
         w.play()
-        num_won += 1
         again = input("Play again? (y/n) ").lower()
         w.reset_game_state()
     
-    print(f"Game over. You won {num_won} games!")
+    print(f"Game over. You won {w.num_won} games!")
