@@ -96,6 +96,8 @@ class Wordle:
                     is_valid = True
                 elif x.isalpha() and len(x) == 5:
                     print("Word not found in word list, try again...")
+                elif x.upper() in ['Q', 'QUIT']:
+                    return x.upper()
                 else:
                     print("Invalid input, try again...")
 
