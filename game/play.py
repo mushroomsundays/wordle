@@ -1,48 +1,61 @@
-# Play a game of Wordle from the command line
-
-# TODO: print out letters that are not in the word
-# xxx reject invalid 5-letter guesses
 
 from random import sample
 
 WORD_LIST_FILEPATH = 'word_lists/wordle-answers-alphabetical.txt'
 GUESS_LIST_FILEPATH = 'word_lists/wordle-allowed-guesses.txt' # doesn't include words from WORD_LIST_FILEPATH
-LETTERS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+USED_WORDS_FILEPATH = 'word_lists/used.txt'
+
+def get_secret_word(word_list_filepath, used_words_filepath):
+    with open(word_list_filepath) as f1, open(used_words_filepath, 'a') as f2:
+        wordle_words = set(f1.read().split())
+        try:
+            used_words = set(f2.read().split())
+        except: # empty file
+            used_words = set()
+
+        # remove words that were already used
+        usable_words = { word for word in wordle_words if word not in used_words }
+        x = sample(usable_words, 1).pop().upper()
+
+        # write used word to word_lists/used.txt
+        f2.write('\n')    
+        f2.write(x)
+
+    return x
 
 class Wordle:    
     def __init__(self):
-        self.game_state = { letter: '_' for letter in LETTERS }
+        self.game_state = { letter: '_' for letter in 'ABCDEFGHIJKLMNOPQRSTUVWXYZ' }
         self.guessed_letters = set()
         self.guessed_words = []
+        self.guess_count = 0
         self.results = []
     
     def play(self):
         """
-        Run loop of get_secret_word -> ask_player_for_guess ->
+        Run game loop of get_secret_word -> ask_player_for_guess ->
         evaluate_guess -> display_letter_list until secret_word is guessed
         """
 
-        secret_word = self.get_secret_word(WORD_LIST_FILEPATH)
+        secret_word = get_secret_word(WORD_LIST_FILEPATH, USED_WORDS_FILEPATH)
         is_correct = False
 
         while not is_correct:
-            guess = self.ask_player_for_guess(GUESS_LIST_FILEPATH, WORD_LIST_FILEPATH)
+            # end game if player fails on 6th guess
+            if self.guess_count > 5:
+                print("Game over. The secret word was {secret_word}")
+                return
+            guess = self.ask_player_for_guess(GUESS_LIST_FILEPATH, WORD_LIST_FILEPATH, secret_word)
+            self.guess_count += 1
             is_correct = self.evaluate_guess(secret_word, guess)
             self.display_letter_list()
             for guess, result in zip(self.guessed_words, self.results):
                 print(f"{guess}: {result}")
             print("____________________________________________________")
         
-        print("Congratulations! You guessed the secret word!")
-    
-    def get_secret_word(self, word_list_filepath):
-        with open(word_list_filepath) as f:
-            word_list = set(f.read().split())
-            x = sample(word_list, 1).pop().upper()
-        
-        return x
+        print(f"Congratulations! You guessed the secret word {secret_word}!")
 
-    def ask_player_for_guess(self, guess_list_filepath, word_list_filepath):
+    def ask_player_for_guess(self, guess_list_filepath, word_list_filepath, secret_word):
         """
         Ask the player for a five letter word. If the word is not valid,
         prompt the player for a new word until they enter a valid one.
@@ -50,6 +63,10 @@ class Wordle:
         is_valid = False 
         while not is_valid:
             x = input("Enter a five letter word: ")
+
+            # end game and reveal word if user enters 'q' or 'quit'
+            if x.lower() in ['q', 'quit']:
+                print(f"Game over. The secret word was {secret_word}")
 
             with open(guess_list_filepath) as f1, open(word_list_filepath) as f2:
                 valid_guesses = set(f1.read().split()).union(set(f2.read().split()))
@@ -121,9 +138,10 @@ class Wordle:
         pass
 
     def reset_game_state(self):
-        self.game_state = { letter: '_' for letter in LETTERS }
+        self.game_state = { letter: '_' for letter in 'ABCDEFGHIJKLMNOPQRSTUVWXYZ' }
         self.guessed_letters = set()
         self.guessed_words = []
+        self.guess_count = 0
         self.results = []
 
 if __name__ == "__main__":
