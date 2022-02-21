@@ -1,9 +1,3 @@
-from .utils import get_secret_word
-
-WORD_LIST_FILEPATH = 'word_lists/wordle-answers-alphabetical.txt'
-GUESS_LIST_FILEPATH = 'word_lists/wordle-allowed-guesses.txt' # doesn't include words from WORD_LIST_FILEPATH
-USED_WORDS_FILEPATH = 'word_lists/used.txt'
-
 class Wordle:    
     def __init__(self):
         self.game_state = { letter: '_' for letter in 'ABCDEFGHIJKLMNOPQRSTUVWXYZ' }
@@ -12,37 +6,6 @@ class Wordle:
         self.guess_count = 0
         self.results = []
         self.num_won = 0
-    
-    def play(self):
-        """
-        Run game loop of get_secret_word -> ask_player_for_guess ->
-        evaluate_guess -> display_letter_list until secret_word is guessed
-        """
-
-        secret_word = get_secret_word(WORD_LIST_FILEPATH, USED_WORDS_FILEPATH)
-        is_correct = False
-
-        while not is_correct:
-            # end game if player fails on 6th guess
-            if self.guess_count > 5:
-                print(f"Game over. The secret word was {secret_word}")
-                return
-
-            guess = self.ask_player_for_guess(GUESS_LIST_FILEPATH, WORD_LIST_FILEPATH)
-
-            # end game if player entered 'q' or 'quit'
-            if guess in ['Q', 'QUIT']:
-                print(f"Game over. The secret word was {secret_word}")
-                return
-
-            self.guess_count += 1
-            is_correct = self.evaluate_guess(secret_word, guess)
-            self.display_letter_list()
-            for guess, result in zip(self.guessed_words, self.results):
-                print(f"{guess}: {result}")
-            print("____________________________________________________")
-        
-        print(f"Congratulations! You guessed the secret word {secret_word}!")
 
     def ask_player_for_guess(self, guess_list_filepath, word_list_filepath):
         """
