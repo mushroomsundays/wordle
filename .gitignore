@@ -1,2 +1,4 @@
 game/word_list/used.txt
 game/users.json
+__pycache__
+*/__pycache__
