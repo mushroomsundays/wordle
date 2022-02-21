@@ -1,5 +1,6 @@
 from classes.wordle import Wordle
-from utils import get_secret_word
+from classes.solver import Solver
+from utils import get_secret_word, evaluate_play_again
 
 WORD_LIST_FILEPATH = 'word_lists/wordle-answers-alphabetical.txt'
 GUESS_LIST_FILEPATH = 'word_lists/wordle-allowed-guesses.txt' # doesn't include words from WORD_LIST_FILEPATH
@@ -7,13 +8,12 @@ USED_WORDS_FILEPATH = 'word_lists/used.txt'
 
 if __name__ == "__main__":
 
-    again = 'y'
+    again = True
     w = Wordle()
 
-    while again == 'y': # play again loop
+    while again:
         secret_word = get_secret_word(WORD_LIST_FILEPATH, USED_WORDS_FILEPATH)
         is_correct = False
-
         while not is_correct: # game loop
             # end game if player fails on 6th guess
             if w.guess_count > 5:
@@ -34,9 +34,7 @@ if __name__ == "__main__":
             for guess, result in zip(w.guessed_words, w.results):
                 print(f"{guess}: {result}")
             print("____________________________________________________")
-        
-        again = input("Play again? (y/n) ").lower()
+        again = evaluate_play_again()
         w.reset_game_state()
-    
     print(f"Game over. You won {w.num_won} games!")
 

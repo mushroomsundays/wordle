@@ -17,3 +17,16 @@ def get_secret_word(word_list_filepath, used_words_filepath):
         f2.write(x)
 
     return x
+
+def evaluate_play_again():
+    """Returns True if yes, False if no. Prompts user on invalid input"""
+    valid_input = False
+    while not valid_input:
+        _input = input("Play again? (y/n) ").lower()
+        if _input in ['y', 'Y', 'n', 'N']:
+            if _input.lower() == 'n':
+                return False 
+            else:
+                return True
+        else:
+            print("Please enter 'y' or 'n'")
