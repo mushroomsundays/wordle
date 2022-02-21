@@ -5,4 +5,4 @@ x. Allow user to give up and see the secret_word
 x. Create used_words.txt and filter them out
 5. Write tests
 6. Make solver
-1. Write README.md
+x. Write README.md

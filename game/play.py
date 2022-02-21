@@ -31,8 +31,8 @@ if __name__ == "__main__":
                 print(f"Congratulations! You guessed the secret word {secret_word}!")
                 break
             w.display_letter_list()
-            for guess, result in zip(w.guessed_words, w.results):
-                print(f"{guess}: {result}")
+            for i, (guess, result) in enumerate(zip(w.guessed_words, w.results)):
+                print(f"({i+1}) {guess}: {result}")
             print("____________________________________________________")
         again = evaluate_play_again()
         w.reset_game_state()
