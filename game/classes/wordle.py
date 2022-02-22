@@ -72,14 +72,6 @@ class Wordle:
 
         return False
 
-    def display_letter_list(self):
-        """
-        Displays an alphabet (or keyboard) indicating which letters
-        have been guessed, and which guessed letters are in the secret_word
-        """
-        for k,v in self.game_state.items():
-            print(f'{k}: {v}')
-
     def verify_game_state(self, secret_word):
         """
         Makes sure game state is correct after being updated

@@ -18,7 +18,7 @@ def get_secret_word(word_list_filepath, used_words_filepath):
 
     return x
 
-def evaluate_play_again():
+def play_again():
     """Returns True if yes, False if no. Prompts user on invalid input"""
     valid_input = False
     while not valid_input:

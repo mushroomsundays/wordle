@@ -6,3 +6,5 @@ x. Create used_words.txt and filter them out
 5. Write tests
 6. Make solver
 x. Write README.md
+8. Solver is getting correct valid words, but returning 0 for calculate_answer_space for all of them
+9. Too many .upper() in Solver; make all words uppercase when file is read
